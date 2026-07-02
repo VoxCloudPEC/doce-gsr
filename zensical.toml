@@ -1,0 +1,72 @@
+[project]
+site_name = "Doce GSR 2026.1"
+site_description = "A new project generated from the default template project."
+#site_author = "<your name here>"
+#site_url = "https://www.example.com/"
+copyright = """
+Copyright &copy; 2026 The authors
+"""
+# Read more: https://zensical.org/docs/setup/navigation/
+# nav = [
+#   { "Get started" = "index.md" },
+#   { "Markdown in 5min" = "markdown.md" },
+# ]
+
+#extra_css = ["stylesheets/extra.css"]
+
+#extra_javascript = ["javascripts/extra.js"]
+
+[project.theme]
+
+#variant = "classic"
+#favicon = "images/favicon.png"
+language = "pt-BR"
+
+features = [
+    "announce.dismiss",
+
+    #"content.action.edit",
+    #"content.action.view",
+    "content.code.annotate",
+    "content.code.copy",
+    "content.code.select",
+    "content.footnote.tooltips",
+    "content.tabs.link",
+    "content.tooltips",
+    # "header.autohide",
+    # "navigation.expand",
+    "navigation.footer",
+    "navigation.indexes",
+    "navigation.instant",
+    "navigation.instant.prefetch",
+    #"navigation.instant.progress",
+    "navigation.path",
+    #"navigation.prune",
+    "navigation.sections",
+    #"navigation.tabs",
+    #"navigation.tabs.sticky",
+    "navigation.top",
+    "navigation.tracking",
+    "search.highlight",
+
+]
+
+#logo = "assets/logo.png"
+
+#[project.theme.icon]
+#logo = "lucide/smile"
+
+#[project.theme.font]
+#text = "Inter"
+#code = "Jetbrains Mono"
+
+[[project.theme.palette]]
+scheme = "default"
+toggle.icon = "lucide/sun"
+toggle.name = "Switch to dark mode"
+
+[[project.theme.palette]]
+scheme = "slate"
+toggle.icon = "lucide/moon"
+toggle.name = "Switch to light mode"
+
