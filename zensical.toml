@@ -2,10 +2,10 @@
 site_name = "Doce GSR 2026.1"
 site_description = "Documentação estudantil de Gerência e Segurança de Redes de Computadores."
 
-site_author = "Fulano de Tal"
-site_url = "https://ifrnlab.github.io/doce-gsr/"
+site_author = "Jean, Rafael e Rodrigo"
+site_url = "https://voxcloudpec.github.io/doce-gsr/"
 
-repo_url = "https://github.com/ifrnlab/doce-gsr"
+repo_url = "https://github.com/VoxCloudPEC/doce-gsr/"
 edit_uri = "edit/main/docs/"
 
 copyright = """
