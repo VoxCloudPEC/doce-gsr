@@ -1,5 +1,7 @@
 # Doce GSR
 
+https://voxcloudpec.github.io/doce-gsr/
+
 Este é o modelo de DOCumentação Estudante (DOCE) oficial para disciplina Gerência e Segurança de Redes de Computadores (GSR).
 
 Um membro de seu grupo do projeto integrador deve importar este repositório na instância do Gitea instalado na Mange[^1] e eventualmente fazer um clone para um repositório do GitHub[^2].
