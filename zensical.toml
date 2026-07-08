@@ -5,7 +5,7 @@ site_description = "Documentação estudantil de Gerência e Segurança de Redes
 site_author = "Jean, Rafael e Rodrigo"
 site_url = "https://voxcloudpec.github.io/doce-gsr/"
 
-repo_url = "https://github.com/VoxCloudPEC/doce-gsr/"
+repo_url = "https://github.com/VoxCloudPEC/doce-gsr"
 edit_uri = "edit/main/docs/"
 
 copyright = """
