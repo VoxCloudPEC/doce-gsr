@@ -4,7 +4,7 @@ icon: lucide/rocket
 
 # Início
 
-# **1\. INTRODUÇÃO**
+# **INTRODUÇÃO**
 
 Este projeto tem como objetivo desenvolver um modelo de negócio e implementar uma infraestrutura de rede segura e eficiente para a empresa **VoxCloud**, visando garantir a qualidade, disponibilidade e segurança do sistema de atendimento e do Prontuário Eletrônico do Cidadão (PEC). A demanda por modernização e conectividade dos dados de saúde pública no município de Parnamirim/RN exige soluções robustas e confiáveis , capazes de eliminar falhas de comunicação que geram filas e ociosidade no serviço público.
 
