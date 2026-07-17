@@ -19,6 +19,7 @@ O uso da ferramenta permite a visualização centralizada do status da rede, com
 Garantir a disponibilidade, estabilidade e desempenho da infraestrutura que sustenta o Prontuário Eletrônico do Cidadão (PEC), evitando falhas de comunicação que geram ociosidade e filas nas unidades de saúde.
 
 **2. Qual ferramenta será adotada?**
+
 - [x] Zabbix
 - [ ] Nagios
 - [ ] Icinga
@@ -26,6 +27,7 @@ Garantir a disponibilidade, estabilidade e desempenho da infraestrutura que sust
 - [ ] A definir após análise técnica
 
 **3. Quais ativos serão monitorados?**
+
 - [x] Servidores Linux (Firewalls, DMZ, Docker)
 - [x] Servidores Windows (Active Directory)
 - [x] Banco de dados (PEC)
@@ -34,6 +36,7 @@ Garantir a disponibilidade, estabilidade e desempenho da infraestrutura que sust
 - [ ] Serviços em nuvem
 
 **4. Quais métricas deverão ser acompanhadas?**
+
 - [x] CPU
 - [x] Memória
 - [x] Disco
@@ -75,6 +78,7 @@ Alta disponibilidade (meta de 99.9% de uptime), segurança proativa e redução 
 ### Where (Onde?)
 
 **1. Onde a solução será instalada?**
+
 - [x] Ambiente local *(No servidor Docker/Portainer da Matriz)*
 - [ ] Nuvem
 - [ ] Ambiente híbrido
@@ -130,6 +134,7 @@ A diretoria do projeto em conjunto com o orientador Credson Isaac.
 A Diretoria Estratégica, garantindo que as métricas atendam às expectativas de nível de serviço (SLA).
 
 **6. Quem decidirá a ferramenta a ser utilizada?**
+
 - [x] Administradores de Sistemas
 - [x] Equipe de Infraestrutura
 - [ ] NOC
@@ -144,6 +149,7 @@ A Diretoria Estratégica, garantindo que as métricas atendam às expectativas d
 Via interface web do Zabbix, vinculando IPs estáticos aos respectivos *templates* (ex: `Linux by Zabbix agent` e `Windows by Zabbix agent`).
 
 **2. Como será realizado o monitoramento?**
+
 - [x] Agentes (Zabbix Agent instalado ativamente nos hosts)
 - [ ] SNMP
 - [x] ICMP (Ping)
@@ -151,6 +157,7 @@ Via interface web do Zabbix, vinculando IPs estáticos aos respectivos *template
 - [ ] Scripts personalizados
 
 **3. Como os alertas serão enviados?**
+
 - [x] E-mail
 - [ ] SMS
 - [ ] Microsoft Teams
@@ -232,6 +239,7 @@ Sim. Todos os logs do Zabbix, Nginx, AD e Firewall serão exportados, retidos e 
 Relatórios de estabilidade de links (WAN/VPN), saúde do hardware (CPU/Disco) e disponibilidade dos serviços (Web e Banco).
 
 **2. Com qual frequência?**
+
 - [ ] Diário
 - [ ] Semanal
 - [x] Mensal *(Reuniões de gestão)*
@@ -245,6 +253,7 @@ Porcentagem de uptime (ex: 99.9%), uso médio de banda (WireGuard Transfer), inc
 ### Pergunta Adicional sobre a Ferramenta / Critérios
 
 **1. Qual sistema de monitoramento será adotado pela organização?**
+
 - [x] Zabbix
 - [ ] Nagios
 - [ ] Icinga
@@ -253,6 +262,7 @@ Porcentagem de uptime (ex: 99.9%), uso médio de banda (WireGuard Transfer), inc
 - [ ] A definir após análise técnica dos administradores de sistemas
 
 **Critérios para Escolha:**
+
 - [ ] Facilidade de instalação e administração.
 - [ ] Escalabilidade.
 - [x] Recursos de monitoramento nativos.
