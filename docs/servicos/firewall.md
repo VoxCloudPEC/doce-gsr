@@ -21,6 +21,7 @@ Proteger a infraestrutura crítica de redes da VoxCloud (Matriz e Filial), garan
 Devem ser protegidos o tráfego administrativo (SSH), o servidor Web institucional (HTTP/HTTPS na DMZ), o serviço de resolução de nomes (DNS), a base de dados do e-SUS PEC, o servidor de autenticação centralizada (AD DS) e todo o ecossistema de monitoramento (Zabbix, Grafana e Graylog).
 
 **3. Quais portas e protocolos precisam ser liberados?**
+
 *   **UDP 51820:** Comunicação da VPN WireGuard.
 *   **TCP 22:** SSH (restrito à LAN e VPN).
 *   **TCP/UDP 53:** Consultas DNS.
@@ -122,7 +123,7 @@ Em caso de perda de gerência (ex: bloqueio do SSH de administração), será ut
 **6. Como será garantida a persistência das regras após reinicializações?**
 Utilizando o utilitário `iptables-persistent`. As regras funcionais serão gravadas no diretório `/etc/iptables/rules.v4`, garantindo que o sistema operacional as restaure automaticamente em qualquer evento de reinicialização (reboot).
 
-**Firewall - Matriz
+####Firewall - Matriz
 ```
 # ─── LIMPAR REGRAS ──────────────────────────────────────────
 iptables -F
@@ -219,7 +220,7 @@ iptables -A INPUT -i enp0s3 -p tcp --dport 22 -m limit --limit 3/min -j ACCEPT
 iptables-save > /etc/iptables/rules.v4
 ```
 
-**Firewall - Filial
+####Firewall - Filial
 
 ```
 # ─── LIMPAR REGRAS ──────────────────────────────────────────
