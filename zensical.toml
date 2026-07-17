@@ -22,9 +22,6 @@ nav = [
 
   { "Serviços de Rede" = [
       "servicos/firewall.md",
-      "servicos/ldap.md",
-      "servicos/ssh.md",
-      "servicos/vpn.md",
       "servicos/zabbix.md",
     ]
   },
