@@ -122,6 +122,167 @@ Em caso de perda de gerência (ex: bloqueio do SSH de administração), será ut
 **6. Como será garantida a persistência das regras após reinicializações?**
 Utilizando o utilitário `iptables-persistent`. As regras funcionais serão gravadas no diretório `/etc/iptables/rules.v4`, garantindo que o sistema operacional as restaure automaticamente em qualquer evento de reinicialização (reboot).
 
-6. Como será garantida a persistência das regras após reinicializações?
-Utilizando o utilitário iptables-persistent. As regras funcionais serão gravadas no diretório /etc/iptables/rules.v4, garantindo que o sistema operacional as restaure automaticamente em qualquer evento de reinicialização (reboot).  
+**Firewall - Matriz
+```
+# ─── LIMPAR REGRAS ──────────────────────────────────────────
+iptables -F
+iptables -X
+iptables -t nat -F
+iptables -t nat -X
+
+# ─── POLÍTICAS PADRÃO ───────────────────────────────────────
+iptables -P INPUT DROP
+iptables -P FORWARD DROP
+iptables -P OUTPUT ACCEPT
+
+# ─── INPUT ──────────────────────────────────────────────────
+iptables -A INPUT -m state --state ESTABLISHED,RELATED -j ACCEPT
+iptables -A INPUT -i lo -j ACCEPT
+
+# SSH só da LAN e VPN
+iptables -A INPUT -i enp0s8 -p tcp --dport 22 -j ACCEPT
+iptables -A INPUT -i wg0 -p tcp --dport 22 -j ACCEPT
+
+# Ping interno
+iptables -A INPUT -i enp0s8 -p icmp --icmp-type echo-request -j ACCEPT
+iptables -A INPUT -i wg0 -p icmp --icmp-type echo-request -j ACCEPT
+
+# DNS
+iptables -A INPUT -i enp0s8 -p udp --dport 53 -j ACCEPT
+iptables -A INPUT -i enp0s8 -p tcp --dport 53 -j ACCEPT
+
+# WireGuard
+iptables -A INPUT -i enp0s3 -p udp --dport 51820 -j ACCEPT
+
+# Zabbix Agent (aceita do servidor 192.168.100.2)
+iptables -A INPUT -i enp0s8 -s 192.168.100.2 -p tcp --dport 10050 -j ACCEPT
+
+# ─── FORWARD: CONEXÕES ESTABELECIDAS ────────────────────────
+iptables -A FORWARD -m state --state ESTABLISHED,RELATED -j ACCEPT
+
+# ─── FORWARD: LAN → WAN ─────────────────────────────────────
+iptables -A FORWARD -i enp0s8 -o enp0s3 -m state --state NEW,ESTABLISHED,RELATED -j ACCEPT
+
+# ─── FORWARD: LAN → DMZ (site) ──────────────────────────────
+iptables -A FORWARD -i enp0s8 -o enp0s9 -d 192.168.200.2 -p tcp --dport 80 -j ACCEPT
+iptables -A FORWARD -i enp0s8 -o enp0s9 -d 192.168.200.2 -p tcp --dport 443 -j ACCEPT
+iptables -A FORWARD -i enp0s8 -o enp0s9 -d 192.168.200.2 -p tcp --dport 10050 -j ACCEPT
+
+# ─── FORWARD: VPN → DMZ (site) ──────────────────────────────
+iptables -A FORWARD -i wg0 -o enp0s9 -d 192.168.200.2 -p tcp --dport 80 -j ACCEPT
+iptables -A FORWARD -i wg0 -o enp0s9 -d 192.168.200.2 -p tcp --dport 443 -j ACCEPT
+
+# ─── FORWARD: DMZ → Zabbix ──────────────────────────────────
+iptables -A FORWARD -i enp0s9 -o enp0s8 -d 192.168.100.2 -p tcp --dport 10050 -j ACCEPT
+iptables -A FORWARD -i enp0s9 -o enp0s8 -d 192.168.100.2 -p tcp --dport 10051 -j ACCEPT
+
+# ─── FORWARD: DMZ → Graylog ─────────────────────────────────
+iptables -A FORWARD -i enp0s9 -o enp0s8 -d 192.168.100.2 -p tcp --dport 12201 -j ACCEPT
+iptables -A FORWARD -i enp0s9 -o enp0s8 -d 192.168.100.2 -p udp --dport 12201 -j ACCEPT
+
+# ─── FORWARD: DMZ → WAN (atualizações) ──────────────────────
+iptables -A FORWARD -i enp0s9 -o enp0s3 -m state --state NEW,ESTABLISHED,RELATED -j ACCEPT
+
+# ─── FORWARD: LAN → Zabbix/Graylog/Grafana ──────────────────
+iptables -A FORWARD -i enp0s8 -d 192.168.100.2 -p tcp --dport 10050 -j ACCEPT
+iptables -A FORWARD -i enp0s8 -d 192.168.100.2 -p tcp --dport 10051 -j ACCEPT
+iptables -A FORWARD -i enp0s8 -d 192.168.100.2 -p tcp --dport 3000 -j ACCEPT
+iptables -A FORWARD -i enp0s8 -d 192.168.100.2 -p tcp --dport 9000 -j ACCEPT
+iptables -A FORWARD -i enp0s8 -d 192.168.100.2 -p tcp --dport 12201 -j ACCEPT
+iptables -A FORWARD -i enp0s8 -d 192.168.100.2 -p udp --dport 12201 -j ACCEPT
+
+# ─── FORWARD: VPN → Zabbix/Graylog/Grafana ──────────────────
+iptables -A FORWARD -i wg0 -d 192.168.100.2 -p tcp --dport 10050 -j ACCEPT
+iptables -A FORWARD -i wg0 -d 192.168.100.2 -p tcp --dport 10051 -j ACCEPT
+iptables -A FORWARD -i wg0 -d 192.168.100.2 -p tcp --dport 3000 -j ACCEPT
+iptables -A FORWARD -i wg0 -d 192.168.100.2 -p tcp --dport 9000 -j ACCEPT
+iptables -A FORWARD -i wg0 -d 192.168.100.2 -p tcp --dport 12201 -j ACCEPT
+iptables -A FORWARD -i wg0 -d 192.168.100.2 -p udp --dport 12201 -j ACCEPT
+
+# ─── FORWARD: DMZ → LAN/VPN bloqueado ───────────────────────
+iptables -A FORWARD -i enp0s9 -o enp0s8 -j DROP
+iptables -A FORWARD -i enp0s9 -o wg0 -j DROP
+
+# ─── FORWARD: Matriz ↔ Filial via VPN ───────────────────────
+iptables -A FORWARD -i wg0 -o enp0s8 -m state --state ESTABLISHED,RELATED -j ACCEPT
+iptables -A FORWARD -i enp0s8 -o wg0 -m state --state NEW,ESTABLISHED,RELATED -j ACCEPT
+
+# ─── NAT ────────────────────────────────────────────────────
+iptables -t nat -A POSTROUTING -o enp0s3 -j MASQUERADE
+
+# ─── PROTEÇÃO ───────────────────────────────────────────────
+iptables -A INPUT -p tcp --tcp-flags ALL NONE -j DROP
+iptables -A INPUT -p tcp --tcp-flags ALL ALL -j DROP
+iptables -A INPUT -i enp0s3 -p tcp --dport 22 -m limit --limit 3/min -j ACCEPT
+
+# ─── SALVAR ─────────────────────────────────────────────────
+iptables-save > /etc/iptables/rules.v4
+```
+
+**Firewall - Filial
+
+```
+# ─── LIMPAR REGRAS ──────────────────────────────────────────
+iptables -F
+iptables -X
+iptables -t nat -F
+iptables -t nat -X
+
+# ─── POLÍTICAS PADRÃO ───────────────────────────────────────
+iptables -P INPUT DROP
+iptables -P FORWARD DROP
+iptables -P OUTPUT ACCEPT
+
+# ─── INPUT ──────────────────────────────────────────────────
+iptables -A INPUT -m state --state ESTABLISHED,RELATED -j ACCEPT
+iptables -A INPUT -i lo -j ACCEPT
+
+# SSH só da LAN e VPN
+iptables -A INPUT -i enp0s8 -p tcp --dport 22 -j ACCEPT
+iptables -A INPUT -i wg0 -p tcp --dport 22 -j ACCEPT
+
+# Ping interno
+iptables -A INPUT -i enp0s8 -p icmp --icmp-type echo-request -j ACCEPT
+iptables -A INPUT -i wg0 -p icmp --icmp-type echo-request -j ACCEPT
+
+# WireGuard
+iptables -A INPUT -i enp0s3 -p udp --dport 51820 -j ACCEPT
+
+# Zabbix Agent (aceita do servidor via VPN)
+iptables -A INPUT -i wg0 -s 192.168.100.2 -p tcp --dport 10050 -j ACCEPT
+iptables -A INPUT -i enp0s8 -s 192.168.101.2 -p tcp --dport 10050 -j ACCEPT
+
+# ─── FORWARD: CONEXÕES ESTABELECIDAS ────────────────────────
+iptables -A FORWARD -m state --state ESTABLISHED,RELATED -j ACCEPT
+
+# ─── FORWARD: LAN → WAN ─────────────────────────────────────
+iptables -A FORWARD -i enp0s8 -o enp0s3 -m state --state NEW,ESTABLISHED,RELATED -j ACCEPT
+
+# ─── FORWARD: LAN Filial → Site da Matriz via VPN ───────────
+iptables -A FORWARD -i enp0s8 -o wg0 -d 192.168.200.2 -p tcp --dport 80 -j ACCEPT
+iptables -A FORWARD -i enp0s8 -o wg0 -d 192.168.200.2 -p tcp --dport 443 -j ACCEPT
+
+# ─── FORWARD: VPN → Zabbix/Graylog/Grafana ──────────────────
+iptables -A FORWARD -i wg0 -d 192.168.100.2 -p tcp --dport 10050 -j ACCEPT
+iptables -A FORWARD -i wg0 -d 192.168.100.2 -p tcp --dport 10051 -j ACCEPT
+iptables -A FORWARD -i wg0 -d 192.168.100.2 -p tcp --dport 3000 -j ACCEPT
+iptables -A FORWARD -i wg0 -d 192.168.100.2 -p tcp --dport 9000 -j ACCEPT
+iptables -A FORWARD -i wg0 -d 192.168.100.2 -p tcp --dport 12201 -j ACCEPT
+iptables -A FORWARD -i wg0 -d 192.168.100.2 -p udp --dport 12201 -j ACCEPT
+
+# ─── FORWARD: Filial ↔ Matriz via VPN ───────────────────────
+iptables -A FORWARD -i wg0 -o enp0s8 -m state --state ESTABLISHED,RELATED -j ACCEPT
+iptables -A FORWARD -i enp0s8 -o wg0 -m state --state NEW,ESTABLISHED,RELATED -j ACCEPT
+
+# ─── NAT ────────────────────────────────────────────────────
+iptables -t nat -A POSTROUTING -o enp0s3 -j MASQUERADE
+
+# ─── PROTEÇÃO ───────────────────────────────────────────────
+iptables -A INPUT -p tcp --tcp-flags ALL NONE -j DROP
+iptables -A INPUT -p tcp --tcp-flags ALL ALL -j DROP
+iptables -A INPUT -i enp0s3 -p tcp --dport 22 -m limit --limit 3/min -j ACCEPT
+
+# ─── SALVAR ─────────────────────────────────────────────────
+iptables-save > /etc/iptables/rules.v4
+```
 
